@@ -39,8 +39,6 @@ class Model:
 				# now pos1 != pos2
 				for i in range(len(r)):
 					self.setCell(pos[i],r[i])
-				
-
 		else:
 			# no empty cells
 			raise ValueError("No empty cells in the table")
@@ -61,7 +59,7 @@ class Model:
 
 	def getEmptyCellAmount(self):
 		# return all the cells in the board that's empty
-		return np.where(self.board==Model.emptyCellChar)
+		return np.where(self.board == Model.emptyCellChar)
 
 	def getEmptyCell(self):
 		# return the Empty Cells locations in the board
@@ -83,9 +81,39 @@ class Model:
 		return stackedCells, stackedCells.shape[0]
 
 	def getAvailableMove(self):
-		# get all the available based on current game table.
+		'''
+			get all the available based on current game table.
+
+			logic for this method:
+			if board contains 0:
+				means that w a s d are all legal moves, return them
+
+			else:
+				we want to find out whether there's two cells with the same value are neighbour
+				in that way we can have legal moves along their direction, for example:
+				[[2,32,64],
+				 [2,16,128],
+				 [4,8,256]]
+				 we wish to check whether two of the cells are neighbour and they have the same value
+				 in this case two 2s are adjacent, that means we can move either upward or downward.
+				 Same as the horizontal way.
+
+				To achieve this, we need:
+				1. for all the rows, we get an array without zero, we remove zeros(empty cells) from it,
+				for example: [2,0,0,2,4,4] we will get [2,2,4,4], then loop through every adjacent pair of 
+				cells, to check whether they have the same value, if so, means move right or left both are legal moves
+				Then append "a" and "d" to a list, since we are sure that they are legal moves and will be returned later on.
+
+				2. check almost the same thing for all the columns, extract a no-zero array for each column,
+				check the same thing. As long as we have two values that are the same and they are neighbour,
+				"w" and "s" will also be legal moves.
+
+				Finally we return the legal moves list.
+
+		'''
 		moveList = []
 		if 0 in self.board:
+
 			return ["w","a","s","d"]
 		else:
 			
@@ -110,28 +138,71 @@ class Model:
 
 	def setCell(self,index, newValue):
 		# index == (row,col)
-		self.board[index[0],index[1]]=newValue
+		# set the cell at that location to the new value
+		self.board[index[0],index[1]] = newValue
 
 	def move(self,direction):
 		# direction == a means all cells move left
 		# d: right
 		# w: up
 		# s: down
+
+
+		'''
+			better check the comments in combineCells method below first.
+
+			since we know how to "push" all the cells to the left and do necessary additions
+			we don't need to write four functions for move w a s d. We just need to change the input board
+			a little bit.
+			For example:
+			to implement move left, we just need to input our original board for combineCells function
+			but this doesn't work for move up, right, down, say for move up, 
+			we have a board:
+			[[0,2,2,4],
+			[0,2,0,0],
+			[0,0,0,0],
+			[0,0,0,0]]
+			now we want to move up, we will have :
+			[[0,4,2,4],
+			[0,0,0,0],
+			[0,0,0,0],
+			[0,0,0,0]]
+
+			To use the combineCells correctly, first, get the transpose of the board:
+			[[0,0,0,0],
+			[2,2,0,0],
+			[2,0,0,0],
+			[4,0,0,0]]
+			Input this board to combineCells, we will get:
+			[[0,0,0,0],
+			[4,0,0,0],
+			[2,0,0,0],
+			[4,0,0,0]]
+			Then, in this "move" method later, we take transpose again 
+			to transform the result board back to the original board, then the result should be correct.
+
+			Same thing for move down and right, just need to conside using flip function, combine with using transpose.
+
+
+		'''
 		resultboard,baseboard = None, None
-		rows, cols = None, None
 		if direction == "w":
+			# case when the user choose to move up
 			baseboard = self.board.T
 
 		elif direction == "a":
+			# case when the user choose to move left
 			baseboard = self.board
 
 		elif direction == "s":
+			# case when the user choose to move bottom
 			baseboard = np.flip(self.board.T,axis=1)
 
 		elif direction == "d":
+			# case when the user choose to move right
 			baseboard = np.flip(self.board,axis=1)
 		
-		rows,cols = baseboard.shape[0],baseboard.shape[1]
+		rows,cols = baseboard.shape[0],baseboard.shape[1] 
 
 		resultboard = np.zeros((rows, cols),dtype=np.int16)
 		
@@ -149,10 +220,6 @@ class Model:
 		self.randomNumberGeneration(amount=1)
 
 
-
-
-
-
 	def getScore(self):
 		# return the current game sctore
 		return self.score
@@ -160,7 +227,6 @@ class Model:
 	def setScore(self, newScore):
 		# set the score to a new value
 		self.score = newScore
-
 
 	def setBoard(self, newBoard):
 		# set the game board to a new value
@@ -171,6 +237,35 @@ class Model:
 		return self.board
 
 	def combineCells(self, board, tempboard):
+
+		'''
+			To implement move, we need to do the following thing:
+			say we have one row in the board, [0,2,2,4], we know if we move right
+			it will be [0, 0, 4, 4], we move left it will be [4,4,0,0]. 
+			We start from the move left case:
+
+			1. get another array that removes all 0s from the array [0,2,2,4], we get [2,2,4]
+			2. reserve an empty array [0,0,0,0], same size as the original array.
+			3. an index that tracks where we are in the above empty array
+			4.
+			for all cells in the [2,2,4]:
+				check whether it's the same as its next neighbour, first iteration, check 2 and 2
+				they are the same, so we can add them up and change [0,0,0,0] in step 2 to [2+2=4,0,0,0]
+				add the index in step 3 up by 1.
+				in case we consider the 2 in [2,2,4] again, set the two 2s to 0, avoid unnecessary loops.
+				the last 4 will keep the value and copy to the result array directly, [4,4,0,0]
+
+				loop through all cells in the row
+
+			5. do the above step for all rows, we get the result.
+
+			Note: in this method instead of create 4 different cases for w a s d, we change the input board,
+			after the move right calculation we flip or transpose it back, please check this together with method
+			"move" above.
+			This method only handle the case for move left.
+
+
+		'''
 		
 		for row_index in range(board.shape[0]):
 			tempRowList = copy.deepcopy(board[row_index])
@@ -182,14 +277,16 @@ class Model:
 					tempboard[row_index,combine_index] = tempRowList[0]
 				else:
 
-					for cell_index in range(len(tempRowList)): # TODO: switch to while loop
+					for cell_index in range(len(tempRowList)): 
 						if tempRowList[cell_index] !=0:
 							if cell_index == len(tempRowList)-1:
+								# when this is the last non-zero cell in a row, 
+								# means it needs to be copied to the new result board
 								tempboard[row_index,combine_index] = tempRowList[cell_index]
 
 							elif tempRowList[cell_index] == tempRowList[cell_index+1]:
 						
-								newValue = tempRowList[cell_index]<<1
+								newValue = tempRowList[cell_index]<<1 # new value = old value * 2
 								self.setScore(self.getScore()+newValue)   # score = score + newValue
 								tempboard[row_index,combine_index] = newValue
 								tempRowList[cell_index+1] = 0	

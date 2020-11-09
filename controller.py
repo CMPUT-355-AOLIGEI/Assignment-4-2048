@@ -2,12 +2,20 @@ import numpy as np
 import random
 import pygame
 
+
+
+
+'''
+Important part for MVC model
+
+'''
 class Controller:
 	def __init__(self, model, view):
 		self.view = view
 		self.model = model
 
 	def play(self):
+		print("\033c")
 		while True:
 			self.view.printBoardEasy()
 			self.view.printScore()
