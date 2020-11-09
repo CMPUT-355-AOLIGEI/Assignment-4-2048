@@ -2,8 +2,17 @@ import numpy as np
 import random
 import copy
 
+
+
+
+
 class Model:
+
 	emptyCellChar = 0
+	rightChar = "d"
+	leftChar = "a"
+	upChar = "w"
+	downChar = "s"
 	def __init__(self, rows, cols):
 		self.rows, self.cols = rows, cols
 		# row by col matrix for board
@@ -45,16 +54,13 @@ class Model:
 
 	def createNumber(self, amount, emptyCells):
 		# generate an amount of random numbers and their locations
-		randomNums = []
-		randomIndex = []
+		randomNums,randomIndex = [],[]
 		for i in range(amount):
-			ran = random.choice([2,4])
 			pos = random.choice(emptyCells).tolist()
-	
-			while pos in randomIndex:
+			while pos in randomIndex: 
 				pos = random.choice(emptyCells)
 			randomIndex.append(pos)
-			randomNums.append(ran)
+			randomNums.append(random.choice([2,4]))
 		return randomNums,randomIndex
 
 	def getEmptyCellAmount(self):
@@ -85,56 +91,123 @@ class Model:
 			get all the available based on current game table.
 
 			logic for this method:
-			if board contains 0:
-				means that w a s d are all legal moves, return them
+			
 
+			comment is unfinshed!!!!!!!!!!!!!
+			comment is unfinshed!!!!!!!!!!!!!
+			comment is unfinshed!!!!!!!!!!!!!
+			code is not optimized
+
+			for every row:
+				get no-zero row
+				if len(row)>1 
+					if exists table[k] == table[k+1]:
+						append(a)
+						append(d)
+				elif len(row)==0:
+					pass
+				else:
+					1. test possible to move left,
+					[2,0,0,0,0,0]
+					[0,2,4,8,0]
+					[2,0,4,8,0]
+					from the index 0 to the right most non-zero cell, 
+					if there exists 0 between them, left move is legal
+
+					2. test possible to move right,
+					from the left most non-zero cell to index n-1, 
+					if there exists 0 between them, right move is legal
+				
+
+
+			get no-zero cols
+			if exists table[k] == table[k+1]:
+				append(w)
+				append(s)
 			else:
-				we want to find out whether there's two cells with the same value are neighbour
-				in that way we can have legal moves along their direction, for example:
-				[[2,32,64],
-				 [2,16,128],
-				 [4,8,256]]
-				 we wish to check whether two of the cells are neighbour and they have the same value
-				 in this case two 2s are adjacent, that means we can move either upward or downward.
-				 Same as the horizontal way.
 
-				To achieve this, we need:
-				1. for all the rows, we get an array without zero, we remove zeros(empty cells) from it,
-				for example: [2,0,0,2,4,4] we will get [2,2,4,4], then loop through every adjacent pair of 
-				cells, to check whether they have the same value, if so, means move right or left both are legal moves
-				Then append "a" and "d" to a list, since we are sure that they are legal moves and will be returned later on.
-
-				2. check almost the same thing for all the columns, extract a no-zero array for each column,
-				check the same thing. As long as we have two values that are the same and they are neighbour,
-				"w" and "s" will also be legal moves.
-
-				Finally we return the legal moves list.
 
 		'''
 		moveList = []
-		if 0 in self.board:
 
-			return ["w","a","s","d"]
-		else:
-			
-			for row_index in range(self.board.shape[0]):
-				if moveList != []: break
-				verticalRemoveZeroArray = self.board[row_index][self.board[row_index] != 0]
-				for col_index in range(len(verticalRemoveZeroArray)):
-					if verticalRemoveZeroArray[col_index]==verticalRemoveZeroArray[col_index+1]:
-						moveList.append("a")
-						moveList.append("d")
+
+		for row_index in range(self.board.shape[0]):
+			if (Model.leftChar in moveList ) and (Model.rightChar in moveList): 
+				break
+			horizontalRemoveZeroArray = self.board[row_index][self.board[row_index] != 0]
+			if len(horizontalRemoveZeroArray) >1:
+				for col_index in range(len(horizontalRemoveZeroArray)-1):
+					if (Model.leftChar in moveList ) and (Model.rightChar in moveList): 
 						break
+					if horizontalRemoveZeroArray[col_index]==horizontalRemoveZeroArray[col_index+1]:
+						moveList.append(Model.leftChar)
+						moveList.append(Model.rightChar)
+						break
+					
+				# 1. test move left
+				if self.testMoveLeft(self.board[row_index]) and (Model.leftChar not in moveList):
+					moveList.append(Model.leftChar)
+				# 2. test move right 
+				if self.testMoveLeft(np.flip(self.board[row_index])) and (Model.rightChar not in moveList):
+					moveList.append(Model.rightChar)
 
 
-			for col_index in range(self.board.shape[1]):
-				horizontalRemoveZeroArray = self.board[:,col_index][self.board[col_index] != 0]
-				for row_index in range(len(horizontalRemoveZeroArray)):
-					if horizontalRemoveZeroArray[row_index] == horizontalRemoveZeroArray[row_index+1]:
-						moveList.append("w")
-						moveList.append("s")
-						return moveList
-			return moveList
+			elif len(horizontalRemoveZeroArray) ==0:
+				pass
+			else:
+				# 1. test move left
+				if self.testMoveLeft(self.board[row_index]) and (Model.leftChar not in moveList):
+					moveList.append(Model.leftChar)
+				# 2. test move right 
+				if self.testMoveLeft(np.flip(self.board[row_index])) and (Model.rightChar not in moveList):
+					moveList.append(Model.rightChar)
+
+
+		for col_index in range(self.board.shape[1]):
+			if (Model.upChar in moveList ) and (Model.downChar in moveList): 
+				break
+			verticalRemoveZeroArray = self.board[:,col_index][self.board[:,col_index] != 0]
+			if len(verticalRemoveZeroArray)>1:
+				for row_index in range(len(verticalRemoveZeroArray)-1):
+					if (Model.upChar in moveList ) and (Model.downChar in moveList): 
+						break
+					if verticalRemoveZeroArray[row_index] == verticalRemoveZeroArray[row_index+1]:
+						moveList.append(Model.upChar)
+						moveList.append(Model.downChar)
+						return list(set(moveList))
+					
+						# 3. test move up
+				if self.testMoveLeft(self.board[:,col_index].T) and (Model.upChar not in moveList):
+					moveList.append(Model.upChar)
+				# 4. test move down 
+				if self.testMoveLeft(np.flip(self.board[:,col_index].T)) and (Model.downChar not in moveList):
+					moveList.append(Model.downChar)
+
+			elif len(verticalRemoveZeroArray) ==0:
+				pass
+			else:
+				# 3. test move up
+				if self.testMoveLeft(self.board[:,col_index].T) and (Model.upChar not in moveList):
+					moveList.append(Model.upChar)
+				# 4. test move down 
+				if self.testMoveLeft(np.flip(self.board[:,col_index].T)) and (Model.downChar not in moveList):
+					moveList.append(Model.downChar)
+
+		return list(set(moveList))
+	def testMoveLeft(self,array):
+
+		rightMostNonZero = 0
+		for i in range(len(array)-1,-1,-1):
+			if array[i] !=0:
+				rightMostNonZero = i
+				break
+
+		for i in range(rightMostNonZero):
+			if array[i] == 0:
+				return True
+
+		return False
+
 
 	def setCell(self,index, newValue):
 		# index == (row,col)
@@ -186,35 +259,34 @@ class Model:
 
 		'''
 		resultboard,baseboard = None, None
-		if direction == "w":
+		if direction == Model.upChar:
 			# case when the user choose to move up
 			baseboard = self.board.T
 
-		elif direction == "a":
+		elif direction == Model.leftChar:
 			# case when the user choose to move left
 			baseboard = self.board
 
-		elif direction == "s":
+		elif direction == Model.downChar:
 			# case when the user choose to move bottom
 			baseboard = np.flip(self.board.T,axis=1)
 
-		elif direction == "d":
+		elif direction == Model.rightChar:
 			# case when the user choose to move right
 			baseboard = np.flip(self.board,axis=1)
 		
 		rows,cols = baseboard.shape[0],baseboard.shape[1] 
-
 		resultboard = np.zeros((rows, cols),dtype=np.int16)
 		
 		# means something changed during the move, means this move is legal
 		self.combineCells(baseboard,resultboard)
-		if direction == "w":
+		if direction == Model.upChar:
 			resultboard = resultboard.T
 
-		elif direction == "s":
+		elif direction == Model.downChar:
 			resultboard = np.flip(resultboard,axis=1).T 
 
-		elif direction == "d":
+		elif direction == Model.rightChar:
 			resultboard = np.flip(resultboard,axis=1)
 		self.setBoard(resultboard)
 		self.randomNumberGeneration(amount=1)
