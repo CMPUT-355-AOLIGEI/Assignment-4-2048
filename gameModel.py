@@ -8,10 +8,12 @@ class Model:
 		self.rows, self.cols = rows, cols
 		# row by col matrix for board
 		self.board = self.boardGeneration(rows,cols)
-		self.randomNumberGeneration(amount=2)
+		# get two random number to get started
+		self.randomNumberGeneration(amount=2) 
 		self.score = 0
 
 	def boardGeneration(self, rows, cols):
+		# create a new board
 		return np.zeros((rows, cols),dtype=np.int16)
 
 	def randomNumberGeneration(self, amount=1):
@@ -19,14 +21,16 @@ class Model:
 		# 2 or 4
 		# in general case, every time we move toward one direction, one of the empty space 
 		# will generate a 2 or 4 randomly
+
+		# note: We can choose the probabilities of selecting 2 or 4, finish later.
 		emptyCells, emptyAmount = self.getEmptyCell()
 		if emptyAmount != 0:
+			# if there's empty cells in the board
 			if amount == 1:
 				# general case, 1 random number after each move
 				assert emptyAmount >=1,"can not generate random number"
 				r,pos = self.createNumber(amount, emptyCells)
-				self.setCell(pos[0],r[0])
-				return True
+				self.setCell(pos[0],r[0]) # set one cell in the board to our new random value
 
 			elif amount >= 2:
 				# game start, we have two initial random number on the board
@@ -35,13 +39,14 @@ class Model:
 				# now pos1 != pos2
 				for i in range(len(r)):
 					self.setCell(pos[i],r[i])
-				return True
+				
 
 		else:
 			# no empty cells
-			return False
+			raise ValueError("No empty cells in the table")
 
 	def createNumber(self, amount, emptyCells):
+		# generate an amount of random numbers and their locations
 		randomNums = []
 		randomIndex = []
 		for i in range(amount):
@@ -55,6 +60,7 @@ class Model:
 		return randomNums,randomIndex
 
 	def getEmptyCellAmount(self):
+		# return all the cells in the board that's empty
 		return np.where(self.board==Model.emptyCellChar)
 
 	def getEmptyCell(self):
@@ -77,6 +83,7 @@ class Model:
 		return stackedCells, stackedCells.shape[0]
 
 	def getAvailableMove(self):
+		# get all the available based on current game table.
 		moveList = []
 		if 0 in self.board:
 			return ["w","a","s","d"]
@@ -147,16 +154,20 @@ class Model:
 
 
 	def getScore(self):
+		# return the current game sctore
 		return self.score
 
 	def setScore(self, newScore):
+		# set the score to a new value
 		self.score = newScore
 
 
 	def setBoard(self, newBoard):
+		# set the game board to a new value
 		self.board = newBoard
 
 	def getBoard(self):
+		# return the game board
 		return self.board
 
 	def combineCells(self, board, tempboard):
@@ -176,21 +187,17 @@ class Model:
 							if cell_index == len(tempRowList)-1:
 								tempboard[row_index,combine_index] = tempRowList[cell_index]
 
-
 							elif tempRowList[cell_index] == tempRowList[cell_index+1]:
 						
 								newValue = tempRowList[cell_index]<<1
 								self.setScore(self.getScore()+newValue)   # score = score + newValue
 								tempboard[row_index,combine_index] = newValue
-								tempRowList[cell_index+1] = 0
-
-								
+								tempRowList[cell_index+1] = 0	
 							else:
 								tempboard[row_index,combine_index] = tempRowList[cell_index]
-
 							tempRowList[cell_index] = 0
 							combine_index+=1
-					#tempboard[row_index] = tempRowList # copy this row to the result board
+					
 
 
 
