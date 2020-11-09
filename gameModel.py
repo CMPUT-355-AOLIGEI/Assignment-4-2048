@@ -93,30 +93,18 @@ class Model:
 			logic for this method:
 			
 
-			comment is unfinshed!!!!!!!!!!!!!
-			comment is unfinshed!!!!!!!!!!!!!
-			comment is unfinshed!!!!!!!!!!!!!
-			code is not optimized
-
 			for every row:
-				get no-zero row
-				if len(row)>1 
-					if exists table[k] == table[k+1]:
-						append(a)
-						append(d)
+				get no-zero row called row1
+				if len(row1)>1 
+					for all cells in row1:
+						if exists table[k] == table[k+1]:
+							append(a)
+							append(d)
+							break
 				elif len(row)==0:
 					pass
 				else:
-					1. test possible to move left,
-					[2,0,0,0,0,0]
-					[0,2,4,8,0]
-					[2,0,4,8,0]
-					from the index 0 to the right most non-zero cell, 
-					if there exists 0 between them, left move is legal
-
-					2. test possible to move right,
-					from the left most non-zero cell to index n-1, 
-					if there exists 0 between them, right move is legal
+					call 
 				
 
 
@@ -125,7 +113,9 @@ class Model:
 				append(w)
 				append(s)
 			else:
-
+				call testMoveLeft twice for char a and d
+				instead of write 4 different loops to check rows and columns from different direction,
+				change the input array, so that we only need one method to check this.
 
 		'''
 		moveList = []
@@ -143,24 +133,11 @@ class Model:
 						moveList.append(Model.leftChar)
 						moveList.append(Model.rightChar)
 						break
-					
-				# 1. test move left
-				if self.testMoveLeft(self.board[row_index]) and (Model.leftChar not in moveList):
-					moveList.append(Model.leftChar)
-				# 2. test move right 
-				if self.testMoveLeft(np.flip(self.board[row_index])) and (Model.rightChar not in moveList):
-					moveList.append(Model.rightChar)
-
-
+				self.jointConditionPart(self.board[row_index],1,moveList)
 			elif len(horizontalRemoveZeroArray) ==0:
 				pass
 			else:
-				# 1. test move left
-				if self.testMoveLeft(self.board[row_index]) and (Model.leftChar not in moveList):
-					moveList.append(Model.leftChar)
-				# 2. test move right 
-				if self.testMoveLeft(np.flip(self.board[row_index])) and (Model.rightChar not in moveList):
-					moveList.append(Model.rightChar)
+				self.jointConditionPart(self.board[row_index],1,moveList)
 
 
 		for col_index in range(self.board.shape[1]):
@@ -176,26 +153,39 @@ class Model:
 						moveList.append(Model.downChar)
 						return list(set(moveList))
 					
-						# 3. test move up
-				if self.testMoveLeft(self.board[:,col_index].T) and (Model.upChar not in moveList):
-					moveList.append(Model.upChar)
-				# 4. test move down 
-				if self.testMoveLeft(np.flip(self.board[:,col_index].T)) and (Model.downChar not in moveList):
-					moveList.append(Model.downChar)
+				self.jointConditionPart(self.board[:,col_index].T,2,moveList)
 
 			elif len(verticalRemoveZeroArray) ==0:
 				pass
 			else:
-				# 3. test move up
-				if self.testMoveLeft(self.board[:,col_index].T) and (Model.upChar not in moveList):
-					moveList.append(Model.upChar)
-				# 4. test move down 
-				if self.testMoveLeft(np.flip(self.board[:,col_index].T)) and (Model.downChar not in moveList):
-					moveList.append(Model.downChar)
+				self.jointConditionPart(self.board[:,col_index].T,2,moveList)
 
 		return list(set(moveList))
-	def testMoveLeft(self,array):
 
+	def jointConditionPart(self, board,Type,moveList):
+		# type == 1: horizontal
+		# type == 2: vertical
+		char1=Model.upChar
+		char2 = Model.downChar
+
+		if Type==1:
+			char1 = Model.leftChar
+			char2 = Model.rightChar
+		if self.testMoveLeft(board) and (char1 not in moveList):
+			moveList.append(char1)
+		if self.testMoveLeft(np.flip(board)) and (char2 not in moveList):
+			moveList.append(char2)
+
+
+	def testMoveLeft(self,array):
+		'''
+		To test one not all zero array can move left
+		First, find the right most non-zero cell, as long as there exists zero on the left
+		,move left is legal.
+
+		Transform the input array to check move up, down, right
+
+		'''
 		rightMostNonZero = 0
 		for i in range(len(array)-1,-1,-1):
 			if array[i] !=0:
@@ -288,8 +278,8 @@ class Model:
 
 		elif direction == Model.rightChar:
 			resultboard = np.flip(resultboard,axis=1)
-		self.setBoard(resultboard)
-		self.randomNumberGeneration(amount=1)
+		self.setBoard(resultboard)			# set the new board
+		self.randomNumberGeneration(amount=1) # place one random number into the board
 
 
 	def getScore(self):
