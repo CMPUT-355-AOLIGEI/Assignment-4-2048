@@ -10,15 +10,21 @@ write new codes associate with pygame to get fancy interface.
 
 
 '''
+
 class View:
 	def __init__(self,model):
 		self.model = model
 
 	def printBoardEasy(self):
-		for row in self.model.getBoard():
+		foregroundColor = ""
+		backgroundColor = ""
+		board = self.model.getBoard()
+		for row in board:
 			for col in row:
+
 				print("%d"%col,end=" ")
 			print("\n")
 
 	def printScore(self):
 		print("current Score is %d"%self.model.getScore())
+

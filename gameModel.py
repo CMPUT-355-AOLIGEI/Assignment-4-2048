@@ -7,7 +7,8 @@ import copy
 
 
 class Model:
-
+	random_number = [2,4]  # random number generated after each move
+	random_weight_list = [80,20]  # weight for 2 and 4
 	emptyCellChar = 0
 	rightChar = "d"
 	leftChar = "a"
@@ -60,7 +61,7 @@ class Model:
 			while pos in randomIndex: 
 				pos = random.choice(emptyCells)
 			randomIndex.append(pos)
-			randomNums.append(random.choice([2,4]))
+			randomNums.append(random.choices(Model.random_number,weights=Model.random_weight_list,k=1)[0])
 		return randomNums,randomIndex
 
 	def getEmptyCellAmount(self):
@@ -104,7 +105,9 @@ class Model:
 				elif len(row)==0:
 					pass
 				else:
-					call 
+					call testMoveLeft twice for char a and d
+					instead of write 4 different loops to check rows and columns from different direction,
+					change the input array, so that we only need one method to check this. 
 				
 
 
