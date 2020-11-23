@@ -70,15 +70,15 @@ def main():
                if button2.collidepoint(mouse_pos):
                     # prints current location of mouse
                      print('button was pressed at {0}'.format(mouse_pos))
-                     col = 6
-                     row = 6
+                     col = 4
+                     row = 4
                      sflag = False
 
                if button3.collidepoint(mouse_pos):
                     # prints current location of mouse
                      print('button was pressed at {0}'.format(mouse_pos))
-                     col = 8
-                     row = 8
+                     col = 4
+                     row = 4
                      sflag = False
 
                if button4.collidepoint(mouse_pos):
@@ -94,13 +94,13 @@ def main():
          pygame.draw.rect(screen, [77, 121, 255], button3)  # draw button
          pygame.draw.rect(screen, [153, 204, 255], button4)  # draw button
          screen.blit(tNormal,(165,110))
-         screen.blit(tHard, (170, 180))
-         screen.blit(tExtereme, (150, 250))
+         screen.blit(tHard, (175, 180))
+         screen.blit(tExtereme, (160, 250))
          screen.blit(tHelper, (320, 350))
          pygame.display.update()
 
    thisCol = 100 * col + ((col + 1) * 10)
-   thisRow = 150 * col + ((row + 1) * 10)
+   thisRow = 110 * col + ((row + 1) * 10)
    pygame.display.set_mode((thisRow, thisCol))
    game = Game(w_surface,row,col)
    game.play() 
@@ -139,15 +139,15 @@ class Game:
 
    def draw(self):
       self.surface.fill(self.bg_color)
-      pos=[0,0]#pos to display
-      myfont=pygame.font.SysFont('a',72)      
+      pos=[30,100]#pos to display
+      myfont=pygame.font.SysFont('a',72)  
       for r in self.model.getBoard():
          for c in r:
             tmp=myfont.render(str(c), True, [255, 255, 255])            
             self.surface.blit(tmp,pos)
             pos[0]+=72
-         pos[1]+=72
-         pos[0]=0
+         pos[1] += 72
+         pos[0] = 30
       pygame.display.update()
       
       
@@ -176,9 +176,5 @@ class Game:
       if self.model.getAvailableMove()==[]:
          return True
       return False
-
-
-
-
-   
+      
 main()
