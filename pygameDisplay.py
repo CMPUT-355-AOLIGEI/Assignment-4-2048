@@ -127,6 +127,7 @@ class Game:
          if self.continue_game:
             self.update()
             self.decide_continue()
+
          self.game_Clock.tick(self.FPS) 
 
 
@@ -154,18 +155,25 @@ class Game:
    def update(self):
       if self.isover():
          self.continue_game=False
+         return
       for event in pygame.event.get():
          if event.type == pygame.QUIT:
             self.close_clicked=True            
          elif event.type == pygame.KEYDOWN:
+            available = self.model.getAvailableMove()
+            if available ==[]:break
             if pygame.key.get_pressed()[pygame.K_a]:
-               self.model.move('a')
-            if pygame.key.get_pressed()[pygame.K_s]:
-               self.model.move('s')            
-            if pygame.key.get_pressed()[pygame.K_d]:
-               self.model.move('d')   
-            if pygame.key.get_pressed()[pygame.K_w]:
-               self.model.move('w')                 
+                if 'a' in available:
+                    self.model.move('a')
+            elif pygame.key.get_pressed()[pygame.K_s]:
+                if 's' in available:
+                    self.model.move('s')            
+            elif pygame.key.get_pressed()[pygame.K_d]:
+                if 'd' in available:
+                    self.model.move('d')   
+            elif pygame.key.get_pressed()[pygame.K_w]:
+                if 'w' in available:
+                    self.model.move('w')                 
             
    def decide_continue(self):
       if self.isover==True:
