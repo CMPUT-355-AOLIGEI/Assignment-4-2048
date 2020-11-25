@@ -1,7 +1,7 @@
 from tkinter import Frame, Label, CENTER
 import pygame
 import gameModel
-import view
+import constant as c
 
 
 def main():
@@ -101,8 +101,8 @@ def main():
 
    thisCol = 100 * col + ((col + 1) * 10)
    thisRow = 150 * col + ((row + 1) * 10)
-   pygame.display.set_mode((thisRow, thisCol))
-   game = Game(w_surface,row,col)
+   pygame.display.set_mode((c.size, c.size))
+   game = Game(w_surface,row,col,screen)
    game.play() 
    pygame.quit()
 
@@ -110,14 +110,15 @@ def main():
 class Game:
    
 
-   def __init__(self, surface, rows, cols):
+   def __init__(self, surface, rows, cols,screen):
       self.surface = surface
-      self.bg_color = pygame.Color(128, 159, 255)
+      self.bg_color = pygame.Color(c.colour["background"])
       self.FPS = 10000000000
       self.game_Clock = pygame.time.Clock()
       self.close_clicked = False
       self.continue_game = True
       self.model = gameModel.Model(rows,cols)
+      self.screen = screen
       
       
    def play(self):
@@ -141,14 +142,38 @@ class Game:
    def draw(self):
       self.surface.fill(self.bg_color)
       pos=[30,100]#pos to display
-      myfont=pygame.font.SysFont('a',72)  
+      myfont=pygame.font.SysFont("Verdana", 35, bold = True)
+      bcol = 0
+      brow = 0
+      boxsize = c.size//4
       for r in self.model.getBoard():
-         for c in r:
-            tmp=myfont.render(str(c), True, [255, 255, 255])            
-            self.surface.blit(tmp,pos)
-            pos[0]+=72
-         pos[1] += 72
-         pos[0] = 30
+         for s in r:
+            if int(str(s)) != 0:
+               tmp=myfont.render(str(s), True, [255, 255, 255])
+               boxcolor = c.colour[str(s)]
+               pygame.draw.rect(self.screen, boxcolor, (bcol * boxsize + c.padding,
+                                              brow * boxsize + c.padding,
+                                              boxsize - 2 * c.padding,
+                                              boxsize - 2 * c.padding), 0)
+               pos = (bcol * boxsize + c.dpadding[str(s)] * c.padding, brow * boxsize + 8 * c.padding)
+               bcol += 1
+               if bcol > 3:
+                  bcol = 0
+               self.surface.blit(tmp,pos)
+            else:
+               pygame.draw.rect(self.screen, c.colour[str(s)], (bcol * boxsize + c.padding,
+                                 brow * boxsize + c.padding,
+                                 boxsize - 2 * c.padding,
+                                 boxsize - 2 * c.padding), 0)
+               #pos = (bcol * boxsize + 4 * c.padding, brow * boxsize + 8 * c.padding)
+               bcol += 1
+               if bcol > 3:
+                  bcol = 0
+         #pos[1] += 72
+         #pos[0] = 30
+         brow += 1
+         if brow > 3:
+            brow = 0
       pygame.display.update()
       
       
