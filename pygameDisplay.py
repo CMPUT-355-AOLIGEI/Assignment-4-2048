@@ -100,7 +100,7 @@ def main():
          pygame.display.update()
 
    thisCol = 100 * col + ((col + 1) * 10)
-   thisRow = 110 * col + ((row + 1) * 10)
+   thisRow = 150 * col + ((row + 1) * 10)
    pygame.display.set_mode((thisRow, thisCol))
    game = Game(w_surface,row,col)
    game.play() 
