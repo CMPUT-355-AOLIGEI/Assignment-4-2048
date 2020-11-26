@@ -23,9 +23,7 @@ def main():
    pygame.mixer.music.load('source/music/bg_music.wav')
    pygame.mixer.music.play(-1)
    screen = pygame.display.set_mode((400, 400))
-   #thisCol = 100 * col + ((col + 1) * 10)
-   #thisRow = 150 * col + ((row + 1) * 10)
-   #pygame.display.set_mode((thisCol, thisRow))
+   
    pygame.display.set_caption('2 0 4 8')
    w_surface = pygame.display.get_surface() 
    w_surface.fill(pygame.Color(234, 234, 250))
@@ -47,7 +45,7 @@ def main():
    button3 = pygame.Rect(100, 240, 200, 50)
    button4 = pygame.Rect(300, 335, 100, 50)
    button5 = pygame.Rect(300, 30, 100, 50)
-   block_helper = pygame.Rect(100, 90, 200, 240)
+   block_helper = pygame.Rect(90, 100, 230, 230)
 
    tNormal = myfont.render('Normal', False, (255, 255, 255))
    tHard = myfont.render('Hard', False, (255, 255, 255))
@@ -63,8 +61,6 @@ def main():
    screen.blit(tHelper, (320, 350))
 
    
-
-
    sflag = True
    while sflag:
          for event in pygame.event.get():
@@ -102,29 +98,36 @@ def main():
                if button4.collidepoint(mouse_pos):
                     # prints current location of mouse
                      print('button was pressed at {0}'.format(mouse_pos))
-                     pygame.draw.rect(screen, [179, 198, 255], block_helper)  # draw button
+                     w_surface.fill(c.colour["over"])
+
+                     pygame.draw.rect(
+                         screen, [204, 153, 102], block_helper)  # draw button
                      font1 = pygame.font.Font(
                          "./source/font/fofbb_reg.ttf", 20)
+                     font2 = pygame.font.Font(
+                         "./source/font/fofbb_reg.ttf", 30)
+                     screen.blit(font2.render(
+                         "Game Rules!", 1, (96, 64, 32)), (110, 50))
                      rule1 = font1.render("Use 'w,a,s,d' to move", False, (242, 242, 242))
                      screen.blit(rule1, (101, 100))
                      rule2 = font1.render(
                          "the tiles. Tiles with", False, (242, 242, 242))
                      screen.blit(rule2, (101, 140))
                      rule3 = font1.render(
-                         "the same number", False, (242, 242, 242))
+                         "the same number will", False, (242, 242, 242))
                      screen.blit(rule3, (101, 180))
                      rule4 = font1.render("merge into one when", False, (242, 242, 242))
                      screen.blit(rule4, (101, 220)) 
                      rule5 = font1.render(
-                         "they touch. Add them", False, (242, 242, 242))
+                         "they collide. Add them", False, (242, 242, 242))
                      screen.blit(rule5, (101, 260))                      
                      rule6 = font1.render(
-                         "up to reach 2048!", False, (242, 242, 242))
+                         "up to reach the goal!", False, (242, 242, 242))
                      screen.blit(rule6, (101, 300))
                      
                      pygame.draw.rect(screen, [153, 204, 255], button5)  # draw button
                      resume = myfont.render('Resume', False, (0, 92, 179))
-                     screen.blit(resume, (310, 45))
+                     screen.blit(resume, (320, 45))
                      
                if button5.collidepoint(mouse_pos):
                   return True
