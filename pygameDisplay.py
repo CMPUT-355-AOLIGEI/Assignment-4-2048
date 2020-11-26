@@ -1,4 +1,5 @@
 from tkinter import Frame, Label, CENTER
+from numpy.core.numeric import isclose
 import pygame
 import gameModel
 import constant as c
@@ -166,10 +167,10 @@ class Game:
       self.isreturn = False
       
    def play(self):
-      while not self.close_clicked:
+      isLose = False
+      while not self.close_clicked and not isLose:
          self.handle_events()
          isWin = self.draw()
-
          # display the winning message when player wins, game ends.
          if isWin:
             score = self.model.getScore()
@@ -177,12 +178,12 @@ class Game:
             myfont = pygame.font.SysFont("Verdana", 35, bold=True)
             self.screen.blit(myfont.render("You Win!", 1, (0, 0, 102)), (150, 150))
             self.screen.blit(myfont.render(
-                "Score: " + str(score), 1, (0, 153, 204)), (150, 200))
-                
+               "Score: " + str(score), 1, (0, 153, 204)), (150, 200))
+               
             exit_button = pygame.Rect(150, 300, 120, 60)
             pygame.draw.rect(self.screen, [153, 204, 255], exit_button)
             self.screen.blit(myfont.render(
-                "EXIT", 1, (0, 0, 102)), (155, 300))
+               "EXIT", 1, (0, 0, 102)), (155, 300))
             pygame.display.update()
             
             for event in pygame.event.get():
@@ -198,6 +199,19 @@ class Game:
 
          # display the losing message when player loses, game ends
          elif not self.continue_game:
+            isLose = True
+         #fix here
+         self.game_Clock.tick(self.FPS)
+
+      #print the goodbye message before exit 
+      # self.surface.fill(c.colour["over"])
+      # myfont = pygame.font.SysFont("Verdana", 35, bold=True)
+      # self.screen.blit(myfont.render("Good Bye!", 1, (0, 0, 102)), (150, 225))
+      # pygame.display.update()
+      # pygame.time.wait(500)
+      if isLose == True:
+         #isClick = True
+         while True:
             score2 = self.model.getScore()
             self.surface.fill(c.colour["over"])
             myfont = pygame.font.SysFont("Verdana", 35, bold=True)
@@ -214,17 +228,8 @@ class Game:
             for event in pygame.event.get():
                if event.type == pygame.MOUSEBUTTONDOWN:
                   mouse_pos = event.pos
-                  if exit_button.collidepoint(mouse_pos):
+                  if exit_button2.collidepoint(mouse_pos):
                      return True
-         #fix here
-         self.game_Clock.tick(self.FPS)
-
-      #print the goodbye message before exit 
-      # self.surface.fill(c.colour["over"])
-      # myfont = pygame.font.SysFont("Verdana", 35, bold=True)
-      # self.screen.blit(myfont.render("Good Bye!", 1, (0, 0, 102)), (150, 225))
-      # pygame.display.update()
-      # pygame.time.wait(500)
       return False
 
 
