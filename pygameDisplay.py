@@ -45,13 +45,30 @@ def main():
    button2 = pygame.Rect(100, 170, 200, 50)
    button3 = pygame.Rect(100, 240, 200, 50)
    button4 = pygame.Rect(300, 335, 100, 50)
+   button5 = pygame.Rect(300, 30, 100, 50)
+   block_helper = pygame.Rect(100, 90, 200, 240)
+
+   tNormal = myfont.render('Normal', False, (255, 255, 255))
+   tHard = myfont.render('Hard', False, (255, 255, 255))
+   tExtereme = myfont.render('Extereme', False, (255, 255, 255))
+   tHelper = myfont.render('Helper', False, (0, 92, 179))
+   pygame.draw.rect(screen, [179, 198, 255], button1)  # draw button
+   pygame.draw.rect(screen, [128, 159, 255], button2)  # draw button
+   pygame.draw.rect(screen, [77, 121, 255], button3)  # draw button
+   pygame.draw.rect(screen, [153, 204, 255], button4)  # draw button
+   screen.blit(tNormal,(165,110))
+   screen.blit(tHard, (175, 180))
+   screen.blit(tExtereme, (160, 250))
+   screen.blit(tHelper, (320, 350))
+
+   
+
 
    sflag = True
    while sflag:
          for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 return False
-
             if event.type == pygame.MOUSEBUTTONDOWN:
                mouse_pos = event.pos  # gets mouse position
 
@@ -84,8 +101,29 @@ def main():
                if button4.collidepoint(mouse_pos):
                     # prints current location of mouse
                      print('button was pressed at {0}'.format(mouse_pos))
+                     pygame.draw.rect(screen, [179, 198, 255], block_helper)  # draw button
+                     font1 = pygame.font.SysFont("Verdana", 18, bold=False)
+                     rule1 = font1.render("Use 'w,a,s,d' to move", False, (0, 0, 0))
+                     screen.blit(rule1, (101, 100))
+                     rule2 = font1.render("the tiles. Tiles with", False, (0, 0, 0))
+                     screen.blit(rule2, (101, 140))
+                     rule3 = font1.render("the same number", False, (0, 0, 0))
+                     screen.blit(rule3, (101, 180))
+                     rule4 = font1.render("merge into one when", False, (0, 0, 0))
+                     screen.blit(rule4, (101, 220)) 
+                     rule5 = font1.render("they touch. Add them", False, (0, 0, 0))
+                     screen.blit(rule5, (101, 260))                      
+                     rule6 = font1.render("up to reach 2048!", False, (0, 0, 0))
+                     screen.blit(rule6, (101, 300))
+                     
+                     pygame.draw.rect(screen, [153, 204, 255], button5)  # draw button
+                     resume = myfont.render('Resume', False, (0, 92, 179))
+                     screen.blit(resume, (310, 45))
+                     
+               if button5.collidepoint(mouse_pos):
+                  return
 
-         tNormal = myfont.render('Normal', False, (255, 255, 255))
+         '''tNormal = myfont.render('Normal', False, (255, 255, 255))
          tHard = myfont.render('Hard', False, (255, 255, 255))
          tExtereme = myfont.render('Extereme', False, (255, 255, 255))
          tHelper = myfont.render('Helper', False, (0, 92, 179))
@@ -96,21 +134,16 @@ def main():
          screen.blit(tNormal,(165,110))
          screen.blit(tHard, (175, 180))
          screen.blit(tExtereme, (160, 250))
-         screen.blit(tHelper, (320, 350))
+         screen.blit(tHelper, (320, 350))'''
          pygame.display.update()
-
+         
    thisCol = 100 * col + ((col + 1) * 10)
    thisRow = 150 * col + ((row + 1) * 10)
    print("You choose difficulty level:", diff_level)
    pygame.display.set_mode((c.size, c.size))
    game = Game(w_surface,row,col,screen,diff_level)
-   game.play() 
+   return game.play()
 
-   #print the goodbye message before exit 
-   myfont = pygame.font.SysFont("Verdana", 35, bold=True)
-   screen.blit(myfont.render("Good Bye!", 1, (0, 0, 102)), (150, 225))
-   pygame.display.update()
-   pygame.time.wait(500)
 
    pygame.quit()
 
@@ -132,14 +165,20 @@ class Game:
       
       
    def play(self):
-      while not self.close_clicked: 
+      while not self.close_clicked:
          self.handle_events()
          self.draw() 
          if self.continue_game:
             self.update()
             self.decide_continue()
 
-         self.game_Clock.tick(self.FPS) 
+         self.game_Clock.tick(self.FPS)
+      #print the goodbye message before exit 
+      myfont = pygame.font.SysFont("Verdana", 35, bold=True)
+      self.screen.blit(myfont.render("Good Bye!", 1, (0, 0, 102)), (150, 225))
+      pygame.display.update()
+      pygame.time.wait(500)
+      return False
 
 
    def handle_events(self):
@@ -158,6 +197,7 @@ class Game:
       boxsize = c.size//4
       for r in self.model.getBoard():
          for s in r:
+            #if int(str(s)) == self.difficulty:
             if int(str(s)) != 0:
                tmp=myfont.render(str(s), True, [255, 255, 255])
                boxcolor = c.colour[str(s)]
@@ -216,7 +256,7 @@ class Game:
    def decide_continue(self):
       if self.isover == True:
          myfont = pygame.font.SysFont("Verdana", 35, bold=True)
-         screen.blit(myfont.render("Game Over!",
+         self.screen.blit(myfont.render("Game Over!",
                                    1, (255, 255, 255)), (85, 225))
          pygame.display.update()
          pygame.time.wait(500)
@@ -238,5 +278,8 @@ class Game:
       elif self.model.getAvailableMove()==[]:
          return True
       return False
-      
-main()
+
+
+loop = True
+while loop:      
+      loop = main()
