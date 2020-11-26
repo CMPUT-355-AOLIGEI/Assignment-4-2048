@@ -121,7 +121,7 @@ def main():
                      screen.blit(resume, (310, 45))
                      
                if button5.collidepoint(mouse_pos):
-                  return
+                  return True
 
          '''tNormal = myfont.render('Normal', False, (255, 255, 255))
          tHard = myfont.render('Hard', False, (255, 255, 255))
