@@ -145,9 +145,6 @@ def main():
    return game.play()
 
 
-   pygame.quit()
-
-
 class Game:
    
 
@@ -162,18 +159,36 @@ class Game:
       self.screen = screen
       #not sure
       self.difficulty = difficulty
-      
+      self.isreturn = False
       
    def play(self):
       while not self.close_clicked:
          self.handle_events()
-         self.draw() 
+         isWin = self.draw()
+         if isWin:
+            self.surface.fill(c.colour["over"])
+            myfont = pygame.font.SysFont("Verdana", 35, bold=True)
+            self.screen.blit(myfont.render("You Win!", 1, (0, 0, 102)), (150, 225))
+            pygame.display.update()
+            pygame.time.wait(2000)
+            return True
          if self.continue_game:
             self.update()
             self.decide_continue()
+            continue
+         else:
+               self.surface.fill(c.colour["over"])
+               myfont = pygame.font.SysFont("Verdana", 35, bold=True)
+               self.screen.blit(myfont.render("Game Over!",
+                                   1, (255, 255, 255)), (85, 225))
+               pygame.display.update()
+               pygame.time.wait(2000)
+               pygame.display.update()
+               return True
 
          self.game_Clock.tick(self.FPS)
       #print the goodbye message before exit 
+      self.surface.fill(c.colour["over"])
       myfont = pygame.font.SysFont("Verdana", 35, bold=True)
       self.screen.blit(myfont.render("Good Bye!", 1, (0, 0, 102)), (150, 225))
       pygame.display.update()
@@ -195,9 +210,11 @@ class Game:
       bcol = 0
       brow = 0
       boxsize = c.size//4
+      if self.difficulty in self.model.getBoard():
+         self.surface.fill(c.colour["over"])
+         return True
       for r in self.model.getBoard():
          for s in r:
-            #if int(str(s)) == self.difficulty:
             if int(str(s)) != 0:
                tmp=myfont.render(str(s), True, [255, 255, 255])
                boxcolor = c.colour[str(s)]
@@ -255,27 +272,21 @@ class Game:
             
    def decide_continue(self):
       if self.isover == True:
-         myfont = pygame.font.SysFont("Verdana", 35, bold=True)
-         self.screen.blit(myfont.render("Game Over!",
-                                   1, (255, 255, 255)), (85, 225))
-         pygame.display.update()
-         pygame.time.wait(500)
-         pygame.display.update()
          self.continue_game = False
-         pygame.display.update()
-         
-         
+         return False
+      return True
+
    def isover(self):
       # fix here 
 
       print("current score: ", self.model.getScore())
       print("difficulty: ", self.difficulty)
       #if the ideal level is achieved, game over
-      if self.model.getScore() == self.difficulty:
-         return True
+      '''if self.model.getScore() == self.difficulty:
+         return True'''
 
       #if no available move, game over
-      elif self.model.getAvailableMove()==[]:
+      if self.model.getAvailableMove()==[]:
          return True
       return False
 
