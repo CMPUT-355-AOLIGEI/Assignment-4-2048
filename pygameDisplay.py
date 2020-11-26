@@ -279,8 +279,8 @@ class Game:
    def isover(self):
       # fix here 
 
-      print("current score: ", self.model.getScore())
-      print("difficulty: ", self.difficulty)
+      #print("current score: ", self.model.getScore())
+      #print("difficulty: ", self.difficulty)
       #if the ideal level is achieved, game over
       '''if self.model.getScore() == self.difficulty:
          return True'''
