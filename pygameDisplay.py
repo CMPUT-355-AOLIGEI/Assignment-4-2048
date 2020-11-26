@@ -2,10 +2,12 @@ from tkinter import Frame, Label, CENTER
 import pygame
 import gameModel
 import constant as c
-
+from pygame.locals import *
 
 def main():
    row,col = 0, 0
+   #initialize the difficulty level at 0
+   diff_level = 0
    '''while True:
       size = input("Please input the size of the game (rows + one single space + columns): ")
       if len(size)==3 and '1'<size[0] and '1'<size[2]:
@@ -15,6 +17,10 @@ def main():
    
    pygame.init()
    pygame.font.init()
+
+   #add load the bgm when the game starts
+   pygame.mixer.music.load('source/music/bg_music.wav')
+   pygame.mixer.music.play(-1)
    screen = pygame.display.set_mode((400, 400))
    #thisCol = 100 * col + ((col + 1) * 10)
    #thisRow = 150 * col + ((row + 1) * 10)
@@ -34,15 +40,6 @@ def main():
 
    screen.blit(tTitle,(110,30))
    screen.blit(tTitle_emoji, (120, 20))
-
-   # img1 = pygame.image.load(
-   #     "/Users/yueling/Desktop/Assignment-4-2048/source_image/extreme.bmp")
-   # screen.blit(img1, (0, 0))
-   # header1_rect = img1.get_rect()
-   # header1_rect.centerx = screen_rect.centerx
-   # header1_rect.centery = screen_rect.centery
-   # screen.blit(img1, screen_rect)
-   # pygame.display.update()
 
    button1 = pygame.Rect(100, 100, 200, 50)
    button2 = pygame.Rect(100, 170, 200, 50)
@@ -66,6 +63,7 @@ def main():
                      col = 4
                      row = 4
                      sflag = False
+                     diff_level = 16
 
                if button2.collidepoint(mouse_pos):
                     # prints current location of mouse
@@ -73,6 +71,7 @@ def main():
                      col = 4
                      row = 4
                      sflag = False
+                     diff_level = 4096
 
                if button3.collidepoint(mouse_pos):
                     # prints current location of mouse
@@ -80,6 +79,7 @@ def main():
                      col = 4
                      row = 4
                      sflag = False
+                     diff_level = 8192
 
                if button4.collidepoint(mouse_pos):
                     # prints current location of mouse
@@ -101,16 +101,24 @@ def main():
 
    thisCol = 100 * col + ((col + 1) * 10)
    thisRow = 150 * col + ((row + 1) * 10)
+   print("You choose difficulty level:", diff_level)
    pygame.display.set_mode((c.size, c.size))
-   game = Game(w_surface,row,col,screen)
+   game = Game(w_surface,row,col,screen,diff_level)
    game.play() 
+
+   #print the goodbye message before exit 
+   myfont = pygame.font.SysFont("Verdana", 35, bold=True)
+   screen.blit(myfont.render("Good Bye!", 1, (0, 0, 102)), (150, 225))
+   pygame.display.update()
+   pygame.time.wait(500)
+
    pygame.quit()
 
 
 class Game:
    
 
-   def __init__(self, surface, rows, cols,screen):
+   def __init__(self, surface, rows, cols, screen, difficulty):
       self.surface = surface
       self.bg_color = pygame.Color(c.colour["background"])
       self.FPS = 10000000000
@@ -119,6 +127,8 @@ class Game:
       self.continue_game = True
       self.model = gameModel.Model(rows,cols)
       self.screen = screen
+      #not sure
+      self.difficulty = difficulty
       
       
    def play(self):
@@ -198,15 +208,34 @@ class Game:
                     self.model.move('d')   
             elif pygame.key.get_pressed()[pygame.K_w]:
                 if 'w' in available:
-                    self.model.move('w')                 
+                    self.model.move('w')           
+            # add a exit game choice by press "q" 
+            elif pygame.key.get_pressed()[pygame.K_q]:
+                  pygame.quit()
             
    def decide_continue(self):
-      if self.isover==True:
+      if self.isover == True:
+         myfont = pygame.font.SysFont("Verdana", 35, bold=True)
+         screen.blit(myfont.render("Game Over!",
+                                   1, (255, 255, 255)), (85, 225))
+         pygame.display.update()
+         pygame.time.wait(500)
+         pygame.display.update()
          self.continue_game = False
+         pygame.display.update()
          
          
    def isover(self):
-      if self.model.getAvailableMove()==[]:
+      # fix here 
+
+      print("current score: ", self.model.getScore())
+      print("difficulty: ", self.difficulty)
+      #if the ideal level is achieved, game over
+      if self.model.getScore() == self.difficulty:
+         return True
+
+      #if no available move, game over
+      elif self.model.getAvailableMove()==[]:
          return True
       return False
       
