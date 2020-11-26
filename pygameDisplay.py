@@ -80,7 +80,7 @@ def main():
                      col = 4
                      row = 4
                      sflag = False
-                     diff_level = 16
+                     diff_level = 8
 
                if button2.collidepoint(mouse_pos):
                     # prints current location of mouse
@@ -102,18 +102,23 @@ def main():
                     # prints current location of mouse
                      print('button was pressed at {0}'.format(mouse_pos))
                      pygame.draw.rect(screen, [179, 198, 255], block_helper)  # draw button
-                     font1 = pygame.font.SysFont("Verdana", 18, bold=False)
-                     rule1 = font1.render("Use 'w,a,s,d' to move", False, (0, 0, 0))
+                     font1 = pygame.font.Font(
+                         "./source/font/fofbb_reg.ttf", 20)
+                     rule1 = font1.render("Use 'w,a,s,d' to move", False, (242, 242, 242))
                      screen.blit(rule1, (101, 100))
-                     rule2 = font1.render("the tiles. Tiles with", False, (0, 0, 0))
+                     rule2 = font1.render(
+                         "the tiles. Tiles with", False, (242, 242, 242))
                      screen.blit(rule2, (101, 140))
-                     rule3 = font1.render("the same number", False, (0, 0, 0))
+                     rule3 = font1.render(
+                         "the same number", False, (242, 242, 242))
                      screen.blit(rule3, (101, 180))
-                     rule4 = font1.render("merge into one when", False, (0, 0, 0))
+                     rule4 = font1.render("merge into one when", False, (242, 242, 242))
                      screen.blit(rule4, (101, 220)) 
-                     rule5 = font1.render("they touch. Add them", False, (0, 0, 0))
+                     rule5 = font1.render(
+                         "they touch. Add them", False, (242, 242, 242))
                      screen.blit(rule5, (101, 260))                      
-                     rule6 = font1.render("up to reach 2048!", False, (0, 0, 0))
+                     rule6 = font1.render(
+                         "up to reach 2048!", False, (242, 242, 242))
                      screen.blit(rule6, (101, 300))
                      
                      pygame.draw.rect(screen, [153, 204, 255], button5)  # draw button
@@ -157,7 +162,6 @@ class Game:
       self.continue_game = True
       self.model = gameModel.Model(rows,cols)
       self.screen = screen
-      #not sure
       self.difficulty = difficulty
       self.isreturn = False
       
@@ -165,34 +169,62 @@ class Game:
       while not self.close_clicked:
          self.handle_events()
          isWin = self.draw()
+
+         # display the winning message when player wins, game ends.
          if isWin:
+            score = self.model.getScore()
             self.surface.fill(c.colour["over"])
             myfont = pygame.font.SysFont("Verdana", 35, bold=True)
-            self.screen.blit(myfont.render("You Win!", 1, (0, 0, 102)), (150, 225))
+            self.screen.blit(myfont.render("You Win!", 1, (0, 0, 102)), (150, 150))
+            self.screen.blit(myfont.render(
+                "Score: " + str(score), 1, (0, 153, 204)), (150, 200))
+                
+            exit_button = pygame.Rect(150, 300, 120, 60)
+            pygame.draw.rect(self.screen, [153, 204, 255], exit_button)
+            self.screen.blit(myfont.render(
+                "EXIT", 1, (0, 0, 102)), (155, 300))
             pygame.display.update()
-            pygame.time.wait(2000)
-            return True
+            
+            for event in pygame.event.get():
+               if event.type == pygame.MOUSEBUTTONDOWN:
+                  mouse_pos = event.pos
+                  if exit_button.collidepoint(mouse_pos):
+                     return True
+
          if self.continue_game:
             self.update()
             self.decide_continue()
             continue
-         else:
-               self.surface.fill(c.colour["over"])
-               myfont = pygame.font.SysFont("Verdana", 35, bold=True)
-               self.screen.blit(myfont.render("Game Over!",
-                                   1, (255, 255, 255)), (85, 225))
-               pygame.display.update()
-               pygame.time.wait(2000)
-               pygame.display.update()
-               return True
 
+         # display the losing message when player loses, game ends
+         elif not self.continue_game:
+            score2 = self.model.getScore()
+            self.surface.fill(c.colour["over"])
+            myfont = pygame.font.SysFont("Verdana", 35, bold=True)
+            self.screen.blit(myfont.render("You Lose!", 1, (0, 0, 102)), (150, 150))
+            self.screen.blit(myfont.render(
+               "Score: " + str(score2), 1, (0, 153, 204)), (150, 200))
+
+            exit_button2 = pygame.Rect(150, 300, 120, 60)
+            pygame.draw.rect(self.screen, [153, 204, 255], exit_button2)
+            self.screen.blit(myfont.render(
+               "EXIT", 1, (0, 0, 102)), (155, 300))
+            pygame.display.update()
+
+            for event in pygame.event.get():
+               if event.type == pygame.MOUSEBUTTONDOWN:
+                  mouse_pos = event.pos
+                  if exit_button.collidepoint(mouse_pos):
+                     return True
+         #fix here
          self.game_Clock.tick(self.FPS)
+
       #print the goodbye message before exit 
-      self.surface.fill(c.colour["over"])
-      myfont = pygame.font.SysFont("Verdana", 35, bold=True)
-      self.screen.blit(myfont.render("Good Bye!", 1, (0, 0, 102)), (150, 225))
-      pygame.display.update()
-      pygame.time.wait(500)
+      # self.surface.fill(c.colour["over"])
+      # myfont = pygame.font.SysFont("Verdana", 35, bold=True)
+      # self.screen.blit(myfont.render("Good Bye!", 1, (0, 0, 102)), (150, 225))
+      # pygame.display.update()
+      # pygame.time.wait(500)
       return False
 
 
@@ -277,14 +309,6 @@ class Game:
       return True
 
    def isover(self):
-      # fix here 
-
-      #print("current score: ", self.model.getScore())
-      #print("difficulty: ", self.difficulty)
-      #if the ideal level is achieved, game over
-      '''if self.model.getScore() == self.difficulty:
-         return True'''
-
       #if no available move, game over
       if self.model.getAvailableMove()==[]:
          return True

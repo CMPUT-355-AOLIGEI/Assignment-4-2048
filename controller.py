@@ -2,9 +2,6 @@ import numpy as np
 import random
 import pygame
 
-
-
-
 '''
 Important part for MVC model
 
@@ -30,7 +27,3 @@ class Controller:
 			if action in availableMoves:
 				self.model.move(action)
 			print("\033c")
-		
-			
-
-
