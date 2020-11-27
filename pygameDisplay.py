@@ -218,6 +218,8 @@ class Game:
             pygame.display.update()
 
             for event in pygame.event.get():
+               if event.type == pygame.QUIT:
+                  return True
                if event.type == pygame.MOUSEBUTTONDOWN:
                   mouse_pos = event.pos
                   if exit_button2.collidepoint(mouse_pos):
