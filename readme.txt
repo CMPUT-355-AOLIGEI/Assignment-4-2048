@@ -2,6 +2,8 @@ Group Name: 2048 Hero
 Members: Luofan Peng, Qianxi Li, Tingyuan Tan, Xiding Luo, Yueling Chen
 Game: 2048
 
+Demo video:https://github.com/CMPUT-355-AOLIGEI/Assignment-4-2048/blob/main/2048demo.mp4
+
 How to play: 
 Open up ur terminal or cmd, type python pygameDisplay.py or python3 pygameDisplay.py to run the game with GUI.
 Goal for this game is to reach the score.
