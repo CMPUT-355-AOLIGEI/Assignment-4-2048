@@ -59,7 +59,7 @@ def main():
    screen.blit(tHard, (175, 180))
    screen.blit(tExtereme, (160, 250))
    screen.blit(tHelper, (320, 350))
-
+   checking = False
    
    sflag = True
    while sflag:
@@ -70,33 +70,34 @@ def main():
                mouse_pos = event.pos  # gets mouse position
 
                 # checks if mouse position is over the button
+               if not checking:
+                  if button1.collidepoint(mouse_pos):
+                     # prints current location of mouse
+                        print('button was pressed at {0}'.format(mouse_pos))
+                        col = 4
+                        row = 4
+                        sflag = False
+                        diff_level = 8
 
-               if button1.collidepoint(mouse_pos):
-                    # prints current location of mouse
-                     print('button was pressed at {0}'.format(mouse_pos))
-                     col = 4
-                     row = 4
-                     sflag = False
-                     diff_level = 8
+                  if button2.collidepoint(mouse_pos):
+                     # prints current location of mouse
+                        print('button was pressed at {0}'.format(mouse_pos))
+                        col = 4
+                        row = 4
+                        sflag = False
+                        diff_level = 4096
 
-               if button2.collidepoint(mouse_pos):
-                    # prints current location of mouse
-                     print('button was pressed at {0}'.format(mouse_pos))
-                     col = 4
-                     row = 4
-                     sflag = False
-                     diff_level = 4096
-
-               if button3.collidepoint(mouse_pos):
-                    # prints current location of mouse
-                     print('button was pressed at {0}'.format(mouse_pos))
-                     col = 4
-                     row = 4
-                     sflag = False
-                     diff_level = 8192
+                  if button3.collidepoint(mouse_pos):
+                     # prints current location of mouse
+                        print('button was pressed at {0}'.format(mouse_pos))
+                        col = 4
+                        row = 4
+                        sflag = False
+                        diff_level = 8192
 
                if button4.collidepoint(mouse_pos):
                     # prints current location of mouse
+                     checking = True
                      print('button was pressed at {0}'.format(mouse_pos))
                      w_surface.fill(c.colour["over"])
 
@@ -130,20 +131,8 @@ def main():
                      screen.blit(resume, (320, 45))
                      
                if button5.collidepoint(mouse_pos):
+                  checking = False
                   return True
-
-         '''tNormal = myfont.render('Normal', False, (255, 255, 255))
-         tHard = myfont.render('Hard', False, (255, 255, 255))
-         tExtereme = myfont.render('Extereme', False, (255, 255, 255))
-         tHelper = myfont.render('Helper', False, (0, 92, 179))
-         pygame.draw.rect(screen, [179, 198, 255], button1)  # draw button
-         pygame.draw.rect(screen, [128, 159, 255], button2)  # draw button
-         pygame.draw.rect(screen, [77, 121, 255], button3)  # draw button
-         pygame.draw.rect(screen, [153, 204, 255], button4)  # draw button
-         screen.blit(tNormal,(165,110))
-         screen.blit(tHard, (175, 180))
-         screen.blit(tExtereme, (160, 250))
-         screen.blit(tHelper, (320, 350))'''
          pygame.display.update()
          
    thisCol = 100 * col + ((col + 1) * 10)
