@@ -3,6 +3,7 @@ Members: Luofan Peng, Qianxi Li, Tingyuan Tan, Xiding Luo, Yueling Chen
 Game: 2048
 
 How to play: 
+Open up ur terminal or cmd, type python pygameDisplay.py or python3 pygameDisplay.py to run the game with GUI.
 Goal for this game is to reach the score.
 Press Normal, Hard or Extreme to set the goal to 2048, 4096 and 8192 respectively.
 
