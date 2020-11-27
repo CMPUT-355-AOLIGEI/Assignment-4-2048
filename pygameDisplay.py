@@ -77,7 +77,7 @@ def main():
                         col = 4
                         row = 4
                         sflag = False
-                        diff_level = 8
+                        diff_level = 2048
 
                   if button2.collidepoint(mouse_pos):
                      # prints current location of mouse
